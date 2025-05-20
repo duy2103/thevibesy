@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "Vibesy",
+    "slug": "vibesy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,19 +12,69 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*",
+      "assets/fonts/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.vibesy",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
+        "UIBackgroundModes": ["location"],
+        "NSLocationUsageDescription": "Vibesy needs access to location to show your position on the map and save locations."
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_API_KEY"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.anonymous.vibesy",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_API_KEY"
+        }
+      },
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Vibesy to use your location to show your position on the map and save locations.",
+          "locationAlwaysPermission": "Allow Vibesy to use your location in the background to update your position on the map.",
+          "locationWhenInUsePermission": "Allow Vibesy to use your location to show your position on the map and save locations."
+        }
+      ],
+      "expo-file-system"
+    ],
+    "scheme": "vibesy",
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    },
+    "owner": "anonymous",
+    "developmentClient": {
+      "silentLaunch": true
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
