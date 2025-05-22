@@ -1,3 +1,44 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Custom styles */
+.safe-area {
+  flex: 1;
+  background-color: #FFFFFF;
+}
+
+.container {
+  padding: 16px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.card {
+  background-color: #F3F4F6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.button {
+  background-color: #3B82F6;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.button-danger {
+  background-color: #EF4444;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.input {
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  padding: 8px;
+}

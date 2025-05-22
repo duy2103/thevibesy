@@ -1,43 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Location from 'expo-location';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 
-interface SavedLocation {
+type SavedLocation = {
   id: string;
   name: string;
   latitude: number;
   longitude: number;
-  emoji: string;
-  link: string;
-}
+};
 
-const INITIAL_LOCATIONS: SavedLocation[] = [
-  {
-    id: '1',
-    name: 'Cool Cafe',
-    latitude: 37.78825,
-    longitude: -122.4324,
-    emoji: '☕️',
-    link: 'https://www.tiktok.com/@user/video/123'
-  },
-  {
-    id: '2',
-    name: 'Amazing Restaurant',
-    latitude: 37.78525,
-    longitude: -122.4354,
-    emoji: '🍜',
-    link: 'https://www.youtube.com/shorts/abc'
-  }
-];
-
-export default function MapScreen() {
-  const [locations, setLocations] = useState<SavedLocation[]>(INITIAL_LOCATIONS);
-  const [userLocation, setUserLocation] = useState<Location.LocationObjectCoords | null>(null);
+const MapScreen = () => {
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const mapRef = useRef<MapView>(null);
+  const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -48,113 +26,64 @@ export default function MapScreen() {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setUserLocation(location.coords);
+      setLocation(location);
     })();
   }, []);
 
-  const initialRegion = userLocation ? {
-    latitude: userLocation.latitude,
-    longitude: userLocation.longitude,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  } : {
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
-      {errorMsg ? (
-        <Text style={styles.errorText}>{errorMsg}</Text>
-      ) : (
-        <>
-          <MapView
-            ref={mapRef}
-            style={styles.map}
-            initialRegion={initialRegion}
-            showsUserLocation
-            showsMyLocationButton
-          >
-            {locations.map((location) => (
-              <Marker
-                key={location.id}
-                coordinate={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                }}
-                title={location.name}
-              >
-                <View style={styles.markerContainer}>
-                  <Text style={styles.markerText}>{location.emoji}</Text>
-                </View>
-              </Marker>
-            ))}
-          </MapView>
-          
-          <TouchableOpacity 
-            style={styles.centerButton}
-            onPress={async () => {
-              if (userLocation && mapRef.current) {
-                const camera = await mapRef.current.getCamera();
-                if (camera) {
-                  camera.center = {
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude,
-                  };
-                  mapRef.current.animateCamera(camera, { duration: 1000 });
-                }
-              }
-            }}
-          >
-            <Ionicons name="locate" size={24} color="#007AFF" />
-          </TouchableOpacity>
-        </>
-      )}
+    <SafeAreaView className="flex-1 bg-white">
+      <StatusBar style="dark" />
+
+      {/* Header */}
+      <View className="px-4 py-4 border-b border-gray-100 flex-row items-center justify-between">
+        <View>
+          <Text className="text-2xl font-bold text-gray-900">Saved Places</Text>
+          <Text className="text-sm text-gray-600">Discover your collection</Text>
+        </View>
+        <TouchableOpacity 
+          className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
+        >
+          <Ionicons name="options-outline" size={24} color="#4B5563" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Map Container */}
+      <View className="flex-1 bg-gray-100">
+        {errorMsg ? (
+          <View className="flex-1 items-center justify-center p-4">
+            <Text className="text-red-500 text-center">{errorMsg}</Text>
+          </View>
+        ) : !location ? (
+          <View className="flex-1 items-center justify-center p-4">
+            <Text className="text-gray-600">Loading map...</Text>
+          </View>
+        ) : (
+          <View className="flex-1">
+            {/* Map View will be implemented here */}
+            <View className="absolute bottom-6 left-4 right-4">
+              <View className="bg-white rounded-2xl shadow-lg p-4">
+                <Text className="text-lg font-semibold text-gray-900">
+                  Your Saved Places
+                </Text>
+                <Text className="text-sm text-gray-600 mt-1">
+                  {selectedLocation ? 
+                    'Location details will appear here' : 
+                    'Select a location to see details'}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Floating Action Button */}
+      <TouchableOpacity 
+        className="absolute bottom-24 right-6 w-14 h-14 bg-blue-600 rounded-full items-center justify-center shadow-lg"
+      >
+        <Ionicons name="location" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-  markerContainer: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  markerText: {
-    fontSize: 24,
-  },
-  errorText: {
-    flex: 1,
-    textAlign: 'center',
-    padding: 20,
-    color: 'red',
-  },
-  centerButton: {
-    position: 'absolute',
-    right: 20,
-    bottom: 100,
-    backgroundColor: 'white',
-    borderRadius: 30,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-}); 
+export default MapScreen; 

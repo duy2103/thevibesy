@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { ThemeProvider } from '@rneui/themed';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View } from 'react-native';
+import { View, Text, LogBox, Platform, ActivityIndicator } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import { LogBox } from 'react-native';
+import { enableScreens } from 'react-native-screens';
+import * as Font from 'expo-font';
+import { MaterialIcons } from '@expo/vector-icons';
+
+// Enable native screens implementation
+enableScreens(true);
 
 // Prevent native splash screen from autohiding
 SplashScreen.preventAutoHideAsync();
@@ -16,36 +21,86 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('ErrorBoundary caught an error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View className="flex-1 justify-center items-center p-4">
+          <Text className="text-xl font-bold mb-2">Something went wrong</Text>
+          <Text className="text-gray-600 mb-4">{this.state.error?.message}</Text>
+          <Text className="text-sm text-gray-500">Please restart the app</Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    // Hide splash screen after the app is ready
-    SplashScreen.hideAsync();
+    async function prepare() {
+      try {
+        // Load fonts
+        await Font.loadAsync(MaterialIcons.font);
+
+        // Perform any other initialization here
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
   }, []);
 
+  if (!isReady) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
   return (
-    <React.StrictMode>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <ErrorBoundary>
+      <GestureHandlerRootView className="flex-1">
         <SafeAreaProvider>
           <ThemeProvider>
-            <View style={{ flex: 1, backgroundColor: '#fff' }}>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  gestureEnabled: true,
-                  animation: 'none',
-                }}
-              >
-                <Stack.Screen 
-                  name="(tabs)" 
-                  options={{ 
-                    headerShown: false,
-                  }} 
-                />
-    </Stack>
-            </View>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                gestureEnabled: Platform.OS === 'ios',
+                animation: Platform.OS === 'ios' ? 'default' : 'none',
+                contentStyle: { backgroundColor: '#fff' },
+              }}
+            >
+              <Stack.Screen name="(tabs)" />
+            </Stack>
           </ThemeProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
-    </React.StrictMode>
+    </ErrorBoundary>
   );
 }

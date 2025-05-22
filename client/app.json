@@ -6,15 +6,13 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*",
-      "assets/fonts/*"
+      "**/*"
     ],
     "ios": {
       "supportsTablet": true,
@@ -23,10 +21,8 @@
         "NSLocationWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
         "UIBackgroundModes": ["location"],
-        "NSLocationUsageDescription": "Vibesy needs access to location to show your position on the map and save locations."
-      },
-      "config": {
-        "googleMapsApiKey": "YOUR_IOS_API_KEY"
+        "NSLocationUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
+        "UIRequiredDeviceCapabilities": ["armv7", "arm64"]
       }
     },
     "android": {
@@ -40,12 +36,7 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION"
       ],
-      "config": {
-        "googleMaps": {
-          "apiKey": "YOUR_ANDROID_API_KEY"
-        }
-      },
-      "edgeToEdgeEnabled": true
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -58,23 +49,18 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Vibesy to use your location to show your position on the map and save locations.",
           "locationAlwaysPermission": "Allow Vibesy to use your location in the background to update your position on the map.",
-          "locationWhenInUsePermission": "Allow Vibesy to use your location to show your position on the map and save locations."
+          "locationWhenInUsePermission": "Allow Vibesy to use your location to show your position on the map and save locations.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
         }
       ],
-      "expo-file-system"
+      [
+        "expo-file-system",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
     ],
-    "scheme": "vibesy",
-    "extra": {
-      "router": {
-        "origin": false
-      }
-    },
-    "owner": "anonymous",
-    "developmentClient": {
-      "silentLaunch": true
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    }
+    "scheme": "vibesy"
   }
 }
