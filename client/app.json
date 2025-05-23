@@ -16,10 +16,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.vibesy",
+      "bundleIdentifier": "com.vibesy.app",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
+        "NSLocationWhenInUseUsageDescription": "Vibesy needs access to location to show your current position on the map and find nearby places.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Vibesy needs access to location to show your current position on the map and find nearby places.",
         "UIBackgroundModes": ["location"],
         "NSLocationUsageDescription": "Vibesy needs access to location to show your position on the map and save locations.",
         "UIRequiredDeviceCapabilities": ["armv7", "arm64"]

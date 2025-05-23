@@ -1,3 +1,17 @@
+import { View } from 'react-native';
+
+// Export a default component to satisfy the router requirement
+export default View;
+
+// Export your types
+export type SavedLocation = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  description?: string;
+};
+
 export interface Location {
   id: string;
   name: string;
