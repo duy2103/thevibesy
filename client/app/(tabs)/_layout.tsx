@@ -28,6 +28,24 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="locations"
+        options={{
+          title: 'Locations',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="location" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
-} 
+}

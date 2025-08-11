@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 import WebView from 'react-native-webview';
 import debounce from 'lodash/debounce';
+import { getLocations, addLocation } from '../utils/api';
 
 // Only import Leaflet components for web
 let MapContainer: any, TileLayer: any, Marker: any, Popup: any, L: any, useMap: any;
@@ -119,11 +120,11 @@ const MOCK_LOCATIONS: SavedLocation[] = [
   }
 ];
 
-const MapScreen = () => {
+const MapScreen = ({ token }: { token: string }) => {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
-  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>(MOCK_LOCATIONS);
+  const [savedLocations, setSavedLocations] = useState<SavedLocation[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([37.78825, -122.4324]);
   const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [newLocation, setNewLocation] = useState({ 
@@ -377,41 +378,49 @@ const MapScreen = () => {
     setSearchResults([]); // Clear search results after selection
   };
 
-  const handleAddLocation = () => {
+  const handleAddLocation = async () => {
     if (!newLocation.name.trim()) {
       Alert.alert('Error', 'Please enter a location name');
       return;
     }
-
-    if (!selectedAddress && !location) {
-      Alert.alert('Error', 'Please select an address or use current location');
+    if (!token) {
+      Alert.alert('Error', 'Please login first');
       return;
     }
-
-    const newLoc: SavedLocation = {
-      id: Date.now().toString(),
-      name: newLocation.name,
-      description: newLocation.description,
-      latitude: selectedAddress ? parseFloat(selectedAddress.lat) : (location?.coords.latitude || 0),
-      longitude: selectedAddress ? parseFloat(selectedAddress.lon) : (location?.coords.longitude || 0),
-      address: selectedAddress?.display_name
-    };
-    
-    setSavedLocations([...savedLocations, newLoc]);
-    setIsAddingLocation(false);
-    setNewLocation({ name: '', description: '', address: '', latitude: 0, longitude: 0 });
-    setSelectedAddress(null);
-
-    // Update markers in WebView for mobile
-    if (Platform.OS !== 'web' && webViewRef.current) {
-      const script = `
-        L.marker([${newLoc.latitude}, ${newLoc.longitude}])
-          .bindPopup('<h3>${newLoc.name}</h3>${newLoc.description ? `<p>${newLoc.description}</p>` : ''}${newLoc.address ? `<p><small>${newLoc.address}</small></p>` : ''}')
-          .addTo(map);
-      `;
-      webViewRef.current.injectJavaScript(script);
+    try {
+      const loc = {
+        name: newLocation.name,
+        latitude: selectedAddress ? parseFloat(selectedAddress.lat) : (location?.coords.latitude || 0),
+        longitude: selectedAddress ? parseFloat(selectedAddress.lon) : (location?.coords.longitude || 0),
+        description: newLocation.description,
+        address: selectedAddress?.display_name
+      };
+      await addLocation(token, loc);
+      setIsAddingLocation(false);
+      setNewLocation({ name: '', description: '', address: '', latitude: 0, longitude: 0 });
+      setSelectedAddress(null);
+      // Refresh locations
+      const data = await getLocations(token);
+      setSavedLocations(data);
+      Alert.alert('Success', 'Location saved!');
+    } catch (e: any) {
+      Alert.alert('Error', e.message || 'Failed to save location');
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      const fetchLocations = async () => {
+        try {
+          const data = await getLocations(token);
+          setSavedLocations(data);
+        } catch (e: any) {
+          Alert.alert('Error', e.message || 'Failed to load locations');
+        }
+      };
+      fetchLocations();
+    }
+  }, [token]);
 
   const generateMapHTML = () => {
     return `
@@ -992,4 +1001,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MapScreen; 
+export default MapScreen;
