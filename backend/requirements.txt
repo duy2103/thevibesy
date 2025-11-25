@@ -1,5 +1,11 @@
 fastapi
 uvicorn[standard]
-supabase
+sqlalchemy
 python-dotenv
-httpx
+pyjwt
+requests
+Pillow
+pytesseract
+passlib[bcrypt]
+bcrypt
+python-multipart

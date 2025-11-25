@@ -7,29 +7,42 @@ import WebView from 'react-native-webview';
 import debounce from 'lodash/debounce';
 import { getLocations, addLocation } from '../utils/api';
 
-// Only import Leaflet components for web
+// Conditional import for web-only packages
 let MapContainer: any, TileLayer: any, Marker: any, Popup: any, L: any, useMap: any;
-if (Platform.OS === 'web') {
-  const leaflet = require('leaflet');
-  const reactLeaflet = require('react-leaflet');
-  MapContainer = reactLeaflet.MapContainer;
-  TileLayer = reactLeaflet.TileLayer;
-  Marker = reactLeaflet.Marker;
-  Popup = reactLeaflet.Popup;
-  useMap = reactLeaflet.useMap;
-  L = leaflet;
-  
-  // Fix Leaflet marker icon issue on web
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  });
-  
-  // Import Leaflet CSS for web
-  require('leaflet/dist/leaflet.css');
-}
+
+// Initialize Leaflet components only on web platform
+const initializeLeaflet = () => {
+  if (Platform.OS === 'web') {
+    try {
+      const leaflet = require('leaflet');
+      const reactLeaflet = require('react-leaflet');
+      MapContainer = reactLeaflet.MapContainer;
+      TileLayer = reactLeaflet.TileLayer;
+      Marker = reactLeaflet.Marker;
+      Popup = reactLeaflet.Popup;
+      useMap = reactLeaflet.useMap;
+      L = leaflet;
+      
+      // Fix Leaflet marker icon issue on web
+      if (L?.Icon?.Default) {
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+          iconUrl: require('leaflet/dist/images/marker-icon.png'),
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+        });
+      }
+      
+      // Import Leaflet CSS for web
+      require('leaflet/dist/leaflet.css');
+    } catch (error) {
+      console.warn('Failed to initialize Leaflet:', error);
+    }
+  }
+};
+
+// Initialize on web
+initializeLeaflet();
 
 // Update map style configuration
 const MAP_STYLE = {
@@ -415,11 +428,31 @@ const MapScreen = ({ token }: { token: string }) => {
           const data = await getLocations(token);
           setSavedLocations(data);
         } catch (e: any) {
-          Alert.alert('Error', e.message || 'Failed to load locations');
+          console.error('Failed to load locations:', e);
         }
       };
       fetchLocations();
     }
+  }, [token]);
+
+  // Add listener to refresh locations when screen comes into focus
+  useEffect(() => {
+    const refreshOnFocus = async () => {
+      if (token) {
+        try {
+          const data = await getLocations(token);
+          setSavedLocations(data);
+          console.log(`Loaded ${data.length} locations`);
+        } catch (e: any) {
+          console.error('Failed to refresh locations:', e);
+        }
+      }
+    };
+
+    // Refresh every 5 seconds when screen is visible
+    const interval = setInterval(refreshOnFocus, 5000);
+    
+    return () => clearInterval(interval);
   }, [token]);
 
   const generateMapHTML = () => {
@@ -567,53 +600,67 @@ const MapScreen = ({ token }: { token: string }) => {
     `;
   };
 
+  // Web-specific styles effect - moved outside of renderMap to comply with hooks rules
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      // Add global styles for web
+      const style = document.createElement('style');
+      style.textContent = `
+        .custom-marker {
+          background-color: ${MARKER_COLORS.savedLocation};
+          border: 3px solid white;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .custom-marker.current-location {
+          background-color: ${MARKER_COLORS.currentLocation};
+        }
+        .leaflet-control-attribution {
+          font-size: 10px;
+          background-color: rgba(255, 255, 255, 0.8) !important;
+          backdrop-filter: blur(5px);
+          -webkit-backdrop-filter: blur(5px);
+          border-radius: 4px;
+        }
+        .leaflet-control-zoom {
+          border: none !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+          border-radius: 8px !important;
+          overflow: hidden;
+        }
+        .leaflet-control-zoom a {
+          background-color: white !important;
+          color: #1c1c1e !important;
+          width: 32px !important;
+          height: 32px !important;
+          line-height: 32px !important;
+          font-size: 16px !important;
+          border: none !important;
+        }
+        .leaflet-control-zoom a:hover {
+          background-color: #f8f8f8 !important;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      return () => {
+        if (document.head.contains(style)) {
+          document.head.removeChild(style);
+        }
+      };
+    }
+  }, []);
+
   const renderMap = () => {
     if (Platform.OS === 'web') {
-      useEffect(() => {
-        // Add global styles for web
-        const style = document.createElement('style');
-        style.textContent = `
-          .custom-marker {
-            background-color: ${MARKER_COLORS.savedLocation};
-            border: 3px solid white;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          }
-          .custom-marker.current-location {
-            background-color: ${MARKER_COLORS.currentLocation};
-          }
-          .leaflet-control-attribution {
-            font-size: 10px;
-            background-color: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border-radius: 4px;
-          }
-          .leaflet-control-zoom {
-            border: none !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-            border-radius: 8px !important;
-            overflow: hidden;
-          }
-          .leaflet-control-zoom a {
-            background-color: white !important;
-            color: #1c1c1e !important;
-            width: 32px !important;
-            height: 32px !important;
-            line-height: 32px !important;
-            font-size: 16px !important;
-            border: none !important;
-          }
-          .leaflet-control-zoom a:hover {
-            background-color: #f8f8f8 !important;
-          }
-        `;
-        document.head.appendChild(style);
-        
-        return () => {
-          document.head.removeChild(style);
-        };
-      }, []);
+      // Check if required components are available
+      if (!MapContainer || !TileLayer || !Marker || !Popup || !L) {
+        return (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Map components not available on this platform</Text>
+          </View>
+        );
+      }
 
       return (
         <MapContainer

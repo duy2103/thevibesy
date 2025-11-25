@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Run Client",
+			"command": "zsh -c 'cd client && [ ! -d node_modules ] && npm install --legacy-peer-deps || true && npx expo start'",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc"
+			]
+		}
+	]
+}

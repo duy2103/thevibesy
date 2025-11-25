@@ -8,6 +8,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { enableScreens } from 'react-native-screens';
 import * as Font from 'expo-font';
 import { MaterialIcons } from '@expo/vector-icons';
+import AuthProvider, { useAuth } from './contexts/AuthContext';
+import AuthScreen from './auth';
 
 // Enable native screens implementation
 enableScreens(true);
@@ -88,19 +90,41 @@ export default function RootLayout() {
       <GestureHandlerRootView className="flex-1">
         <SafeAreaProvider>
           <ThemeProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                gestureEnabled: Platform.OS === 'ios',
-                animation: Platform.OS === 'ios' ? 'default' : 'none',
-                contentStyle: { backgroundColor: '#fff' },
-              }}
-            >
-              <Stack.Screen name="(tabs)" />
-            </Stack>
+            <AuthProvider>
+              <AuthGuard />
+            </AuthProvider>
           </ThemeProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
 }
+
+const AuthGuard = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />;
+  }
+
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: Platform.OS === 'ios',
+        animation: Platform.OS === 'ios' ? 'default' : 'none',
+        contentStyle: { backgroundColor: '#fff' },
+      }}
+    >
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
+};

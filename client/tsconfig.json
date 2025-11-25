@@ -10,7 +10,7 @@
     },
     "jsx": "react-native",
     "types": [
-      "nativewind/types"
+      "node"
     ],
     "allowJs": true,
     "esModuleInterop": true,
