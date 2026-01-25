@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
-import { register, login } from './utils/api';
+import { register, login, demoLogin } from './utils/api';
 import { useAuth } from './contexts/AuthContext';
 
 const AuthScreen = () => {
@@ -24,6 +24,14 @@ const AuthScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login: authLogin } = useAuth();
+
+  const toggleAuthMode = (loginMode: boolean) => {
+    setIsLogin(loginMode);
+    // Clear form when switching
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  };
 
   const validateForm = () => {
     if (!email || !password) {
@@ -57,17 +65,16 @@ const AuthScreen = () => {
       if (isLogin) {
         const response = await login(email, password);
         await authLogin(response.access_token);
-        Alert.alert('Success', 'Login successful!');
+        // Success - context will handle navigation
       } else {
-        await register(email, password);
-        Alert.alert('Success', 'Registration successful! Please login.');
-        setIsLogin(true);
-        setPassword('');
-        setConfirmPassword('');
+        const response = await register(email, password);
+        // Auto-login after successful registration
+        await authLogin(response.access_token);
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      Alert.alert('Error', error.message || 'Authentication failed');
+      const errorMessage = error.message || 'Authentication failed';
+      Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -76,18 +83,12 @@ const AuthScreen = () => {
   const handleDemoLogin = async () => {
     setLoading(true);
     try {
-      // Try to register demo user first, then login
-      try {
-        await register('demo@vibesy.app', 'demo123456');
-      } catch (e) {
-        // User might already exist, that's fine
-      }
-      
-      const response = await login('demo@vibesy.app', 'demo123456');
+      const response = await demoLogin();
       await authLogin(response.access_token);
-      Alert.alert('Success', 'Demo login successful!');
+      // Success - context will handle navigation
     } catch (error: any) {
-      Alert.alert('Error', 'Demo login failed');
+      console.error('Demo login error:', error);
+      Alert.alert('Error', error.message || 'Demo login failed');
     } finally {
       setLoading(false);
     }
@@ -117,7 +118,7 @@ const AuthScreen = () => {
             {/* Toggle */}
             <View style={styles.toggle}>
               <TouchableOpacity
-                onPress={() => setIsLogin(true)}
+                onPress={() => toggleAuthMode(true)}
                 style={[styles.toggleButton, isLogin && styles.toggleButtonActive]}
               >
                 <Text style={[styles.toggleText, isLogin && styles.toggleTextActive]}>
@@ -125,7 +126,7 @@ const AuthScreen = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setIsLogin(false)}
+                onPress={() => toggleAuthMode(false)}
                 style={[styles.toggleButton, !isLogin && styles.toggleButtonActive]}
               >
                 <Text style={[styles.toggleText, !isLogin && styles.toggleTextActive]}>

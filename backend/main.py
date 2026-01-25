@@ -104,7 +104,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     # Truncate password if longer than 72 bytes (bcrypt limitation)
     if len(plain_password.encode('utf-8')) > 72:
         plain_password = plain_password[:72]
-    return pwd_context.verify(plain_password, hashed_password)
+    # If there's no stored hash, treat as invalid credentials
+    if not hashed_password:
+        logger.warning("Empty password hash for user during verify_password")
+        return False
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception as e:
+        # Handle UnknownHashError from passlib gracefully without requiring static import
+        if e.__class__.__name__ == 'UnknownHashError':
+            logger.warning("Could not identify stored password hash format; rejecting login")
+            return False
+        logger.exception("Unexpected error during password verification: %s", e)
+        return False
 
 def get_password_hash(password: str) -> str:
     # Truncate password if longer than 72 bytes (bcrypt limitation)

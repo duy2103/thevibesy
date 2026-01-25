@@ -31,7 +31,11 @@ export async function register(email: string, password: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Register failed:', res.status, errorText);
+    throw new Error(errorText || `Registration failed (${res.status})`);
+  }
   return res.json();
 }
 
@@ -41,13 +45,21 @@ export async function login(email: string, password: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Login failed:', res.status, errorText);
+    throw new Error(errorText || `Login failed (${res.status})`);
+  }
   return res.json();
 }
 
 export async function demoLogin() {
   const res = await fetch(`${getApiBase()}/demo-login`);
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Demo login failed:', res.status, errorText);
+    throw new Error(errorText || `Demo login failed (${res.status})`);
+  }
   return res.json();
 }
 
