@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
 import { getLocations, getProfile, updateProfile } from '../utils/api';
+import { router } from 'expo-router';
 
 const ProfileScreen = () => {
   const [savedLocations, setSavedLocations] = useState<any[]>([]);
@@ -60,6 +62,31 @@ const ProfileScreen = () => {
     } catch (e: any) {
       Alert.alert('Error', e.message || 'Failed to update profile');
     }
+  };
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        // For simplicity, we'll use the local URI
+        // In production, you'd upload this to a server
+        setEditedProfile({...editedProfile, avatar_url: result.assets[0].uri});
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const viewLocationOnMap = (location: any) => {
+    // Navigate to map and center on this location
+    router.push('/map');
   };
 
   if (loading) {
@@ -123,33 +150,61 @@ const ProfileScreen = () => {
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>{savedLocations.length}</Text>
-              <Text style={styles.statLabel}>Places Saved</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>1</Text>
-              <Text style={styles.statLabel}>Lists Created</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Places Visited</Text>
+              <Text style={styles.statLabel}>Saved Locations</Text>
             </View>
           </View>
         </View>
 
         {/* Recently Saved Locations */}
         <View style={styles.locationsSection}>
-          <Text style={styles.sectionTitle}>Recently Saved</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>My Locations</Text>
+            {savedLocations.length > 0 && (
+              <TouchableOpacity onPress={() => router.push('/map')}>
+                <Text style={styles.viewAllText}>View Map →</Text>
+              </TouchableOpacity>
+            )}
+          </View>
           {savedLocations.length === 0 ? (
-            <Text style={styles.emptyText}>No locations saved yet.</Text>
+            <View style={styles.emptyState}>
+              <Ionicons name="location-outline" size={48} color="#9CA3AF" />
+              <Text style={styles.emptyText}>No locations saved yet</Text>
+              <Text style={styles.emptySubtext}>
+                Go to the Locations tab to parse screenshots and add places!
+              </Text>
+              <TouchableOpacity 
+                style={styles.addLocationButton}
+                onPress={() => router.push('/locations')}
+              >
+                <Ionicons name="add-circle-outline" size={20} color="white" />
+                <Text style={styles.addLocationButtonText}>Add Locations</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
-            savedLocations.slice(0, 5).map((location) => (
-              <View key={location.id} style={styles.locationCard}>
-                <Text style={styles.locationName}>{location.name}</Text>
-                <Text style={styles.locationDescription}>{location.description}</Text>
-                {location.address && (
-                  <Text style={styles.locationAddress}>{location.address}</Text>
-                )}
-              </View>
+            savedLocations.slice(0, 10).map((location) => (
+              <TouchableOpacity 
+                key={location.id} 
+                style={styles.locationCard}
+                onPress={() => viewLocationOnMap(location)}
+              >
+                <View style={styles.locationIcon}>
+                  <Ionicons name="location" size={20} color="#3B82F6" />
+                </View>
+                <View style={styles.locationInfo}>
+                  <Text style={styles.locationName}>{location.name}</Text>
+                  {location.description && (
+                    <Text style={styles.locationDescription} numberOfLines={1}>
+                      {location.description}
+                    </Text>
+                  )}
+                  {location.address && (
+                    <Text style={styles.locationAddress} numberOfLines={1}>
+                      📍 {location.address}
+                    </Text>
+                  )}
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+              </TouchableOpacity>
             ))
           )}
         </View>
@@ -165,6 +220,22 @@ const ProfileScreen = () => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Edit Profile</Text>
             
+            {/* Avatar Picker */}
+            <TouchableOpacity 
+              style={styles.avatarPicker}
+              onPress={pickImage}
+            >
+              <Image 
+                source={{ 
+                  uri: editedProfile.avatar_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face'
+                }} 
+                style={styles.avatarPickerImage} 
+              />
+              <View style={styles.avatarPickerOverlay}>
+                <Ionicons name="camera" size={24} color="white" />
+              </View>
+            </TouchableOpacity>
+
             <TextInput
               style={styles.input}
               placeholder="Name"
@@ -178,13 +249,7 @@ const ProfileScreen = () => {
               value={editedProfile.bio || ''}
               onChangeText={(text) => setEditedProfile({...editedProfile, bio: text})}
               multiline
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Avatar URL"
-              value={editedProfile.avatar_url || ''}
-              onChangeText={(text) => setEditedProfile({...editedProfile, avatar_url: text})}
+              numberOfLines={3}
             />
 
             <View style={styles.modalButtons}>
@@ -317,25 +382,75 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 24,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#111827',
-    marginBottom: 16,
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#3B82F6',
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
   },
   emptyText: {
+    fontSize: 16,
     color: '#6b7280',
+    marginTop: 12,
+    fontWeight: '600',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 8,
+    textAlign: 'center',
+    paddingHorizontal: 32,
+  },
+  addLocationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 20,
+    gap: 8,
+  },
+  addLocationButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   locationCard: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#f3f4f6',
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+  },
+  locationIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#EFF6FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  locationInfo: {
+    flex: 1,
   },
   locationName: {
     fontSize: 16,
@@ -345,12 +460,34 @@ const styles = StyleSheet.create({
   locationDescription: {
     fontSize: 14,
     color: '#6b7280',
-    marginTop: 4,
+    marginTop: 2,
   },
   locationAddress: {
     fontSize: 12,
     color: '#9ca3af',
     marginTop: 2,
+  },
+  avatarPicker: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  avatarPickerImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  avatarPickerOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#3B82F6',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   modalContainer: {
     flex: 1,

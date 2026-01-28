@@ -1,16 +1,27 @@
-INFO:     Will watch for changes in these directories: ['/Users/duyducvu2103/vibesy-backup/backend']
+INFO:     Will watch for changes in these directories: ['/Users/duyducvu2103/thevibesy/backend']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [88921] using StatReload
-INFO:     Started server process [88969]
+INFO:     Started reloader process [44329] using WatchFiles
+WARNING:vibesy:⚠️  Using default SECRET_KEY! Set SECRET_KEY in .env for production!
+WARNING:vibesy:⚠️  CORS allows all origins! Set ALLOWED_ORIGINS in .env for production!
+INFO:     Started server process [44373]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:59777 - "GET /docs HTTP/1.1" 200 OK
-WARNING:  StatReload detected changes in 'test_location_parser.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [88969]
-INFO:     Started server process [90592]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:59855 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62068 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64332 - "GET /debug/token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzY5OTEwNjQ3fQ.wT4ZeLkgqa71f771kWyUkwpvt5wo1HX1otH5TA42MzQ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64332 - "OPTIONS /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64332 - "GET /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64419 - "OPTIONS /parse-screenshot HTTP/1.1" 200 OK
+INFO:vibesy:Screenshot parse request from user 3: screenshot.jpg (image/png)
+INFO:vibesy:Processing image: (696, 308) pixels, mode: RGB
+INFO:vibesy:OCR extracted 17 characters
+INFO:vibesy:OCR sample: Ze ku Ramen = a” ...
+INFO:vibesy:Extracting locations from text (length: 17)
+INFO:vibesy:Found 1 unique locations
+INFO:vibesy:Extracted 1 potential locations from text
+INFO:vibesy:Geocoding 'Ze ku Ramen' (attempt 1/2)
+INFO:vibesy:Successfully geocoded 'Ze ku Ramen' to (35.7082133, 139.8046794)
+INFO:vibesy:✓ Geocoded: Ze ku Ramen
+INFO:vibesy:Successfully geocoded 1 of 1 locations
+INFO:     127.0.0.1:64419 - "POST /parse-screenshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64422 - "OPTIONS /locations/from-parsed HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64422 - "POST /locations/from-parsed HTTP/1.1" 200 OK
