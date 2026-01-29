@@ -5,7 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 import WebView from 'react-native-webview';
 import debounce from 'lodash/debounce';
-import { getLocations, addLocation } from '../utils/api';
+import { getLocations, addLocation, deleteLocation } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 // Conditional import for web-only packages
 let MapContainer: any, TileLayer: any, Marker: any, Popup: any, L: any, useMap: any;
@@ -133,7 +134,8 @@ const MOCK_LOCATIONS: SavedLocation[] = [
   }
 ];
 
-const MapScreen = ({ token }: { token: string }) => {
+const MapScreen = () => {
+  const { authToken } = useAuth();
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<SavedLocation | null>(null);
@@ -391,12 +393,39 @@ const MapScreen = ({ token }: { token: string }) => {
     setSearchResults([]); // Clear search results after selection
   };
 
+  const handleDeleteLocation = async (locationId: string) => {
+    if (!authToken) return;
+    
+    Alert.alert(
+      'Delete Location',
+      'Are you sure you want to delete this location?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteLocation(authToken, locationId);
+              // Refresh locations
+              const data = await getLocations(authToken);
+              setSavedLocations(data);
+              Alert.alert('Success', 'Location deleted!');
+            } catch (e: any) {
+              Alert.alert('Error', e.message || 'Failed to delete location');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleAddLocation = async () => {
     if (!newLocation.name.trim()) {
       Alert.alert('Error', 'Please enter a location name');
       return;
     }
-    if (!token) {
+    if (!authToken) {
       Alert.alert('Error', 'Please login first');
       return;
     }
@@ -408,12 +437,12 @@ const MapScreen = ({ token }: { token: string }) => {
         description: newLocation.description,
         address: selectedAddress?.display_name
       };
-      await addLocation(token, loc);
+      await addLocation(authToken, loc);
       setIsAddingLocation(false);
       setNewLocation({ name: '', description: '', address: '', latitude: 0, longitude: 0 });
       setSelectedAddress(null);
       // Refresh locations
-      const data = await getLocations(token);
+      const data = await getLocations(authToken);
       setSavedLocations(data);
       Alert.alert('Success', 'Location saved!');
     } catch (e: any) {
@@ -422,27 +451,28 @@ const MapScreen = ({ token }: { token: string }) => {
   };
 
   useEffect(() => {
-    if (token) {
+    if (authToken) {
       const fetchLocations = async () => {
         try {
-          const data = await getLocations(token);
+          const data = await getLocations(authToken);
           setSavedLocations(data);
+          console.log(`Loaded ${data.length} locations on map`);
         } catch (e: any) {
           console.error('Failed to load locations:', e);
         }
       };
       fetchLocations();
     }
-  }, [token]);
+  }, [authToken]);
 
   // Add listener to refresh locations when screen comes into focus
   useEffect(() => {
     const refreshOnFocus = async () => {
-      if (token) {
+      if (authToken) {
         try {
-          const data = await getLocations(token);
+          const data = await getLocations(authToken);
           setSavedLocations(data);
-          console.log(`Loaded ${data.length} locations`);
+          console.log(`Refreshed ${data.length} locations on map`);
         } catch (e: any) {
           console.error('Failed to refresh locations:', e);
         }
@@ -453,7 +483,7 @@ const MapScreen = ({ token }: { token: string }) => {
     const interval = setInterval(refreshOnFocus, 5000);
     
     return () => clearInterval(interval);
-  }, [token]);
+  }, [authToken]);
 
   const generateMapHTML = () => {
     return `
@@ -584,7 +614,7 @@ const MapScreen = ({ token }: { token: string }) => {
               `L.marker([${loc.latitude}, ${loc.longitude}], {
                 icon: createMarkerIcon()
                })
-                .bindPopup('<h3>${loc.name}</h3>${loc.description ? `<p>${loc.description}</p>` : ''}${loc.address ? `<p><small>${loc.address}</small></p>` : ''}')
+                .bindPopup('<h3>${loc.name}</h3>${loc.description ? `<p>${loc.description}</p>` : ''}${loc.address ? `<p><small>${loc.address}</small></p>` : ''}<button onclick="deleteLocation(\'${loc.id}\')" style="margin-top: 8px; padding: 6px 12px; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">🗑️ Delete</button>')
                 .addTo(map);`
             ).join('\n')}
 
@@ -593,6 +623,10 @@ const MapScreen = ({ token }: { token: string }) => {
                 `map.setView([${location.coords.latitude}, ${location.coords.longitude}], 15);`
                 : ''
               }
+            }
+            
+            function deleteLocation(id) {
+              window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify({action: 'delete', id: id}));
             }
           </script>
         </body>
@@ -713,6 +747,22 @@ const MapScreen = ({ token }: { token: string }) => {
                       {loc.address}
                     </p>
                   )}
+                  <button
+                    onClick={() => handleDeleteLocation(loc.id)}
+                    style={{
+                      marginTop: '8px',
+                      padding: '6px 12px',
+                      backgroundColor: '#ef4444',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
               </Popup>
             </Marker>
@@ -729,6 +779,16 @@ const MapScreen = ({ token }: { token: string }) => {
           style={{ flex: 1 }}
           scrollEnabled={false}
           bounces={false}
+          onMessage={(event) => {
+            try {
+              const data = JSON.parse(event.nativeEvent.data);
+              if (data.action === 'delete') {
+                handleDeleteLocation(data.id);
+              }
+            } catch (e) {
+              console.error('Error parsing WebView message:', e);
+            }
+          }}
         />
       );
     }
