@@ -1,27 +1,145 @@
 INFO:     Will watch for changes in these directories: ['/Users/duyducvu2103/thevibesy/backend']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [44329] using WatchFiles
+INFO:     Started reloader process [34152] using WatchFiles
+/Users/duyducvu2103/anaconda3/lib/python3.11/site-packages/pandas/core/arrays/masked.py:61: UserWarning: Pandas requires version '1.3.6' or newer of 'bottleneck' (version '1.3.5' currently installed).
+  from pandas.core import (
 WARNING:vibesy:⚠️  Using default SECRET_KEY! Set SECRET_KEY in .env for production!
 WARNING:vibesy:⚠️  CORS allows all origins! Set ALLOWED_ORIGINS in .env for production!
-INFO:     Started server process [44373]
+INFO:     Started server process [34196]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:62068 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64332 - "GET /debug/token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzY5OTEwNjQ3fQ.wT4ZeLkgqa71f771kWyUkwpvt5wo1HX1otH5TA42MzQ HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64332 - "OPTIONS /profile HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64332 - "GET /profile HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64419 - "OPTIONS /parse-screenshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62542 - "GET /health HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [34196]
+/Users/duyducvu2103/anaconda3/lib/python3.11/site-packages/pandas/core/arrays/masked.py:61: UserWarning: Pandas requires version '1.3.6' or newer of 'bottleneck' (version '1.3.5' currently installed).
+  from pandas.core import (
+WARNING:vibesy:⚠️  Using default SECRET_KEY! Set SECRET_KEY in .env for production!
+WARNING:vibesy:⚠️  CORS allows all origins! Set ALLOWED_ORIGINS in .env for production!
+INFO:     Started server process [40839]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:52312 - "GET /debug/token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzY5OTEwNjQ3fQ.wT4ZeLkgqa71f771kWyUkwpvt5wo1HX1otH5TA42MzQ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52312 - "OPTIONS /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52312 - "GET /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52314 - "OPTIONS /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52312 - "GET /profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52314 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52317 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52337 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52358 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52363 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52386 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52388 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52396 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52404 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52407 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52409 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "OPTIONS /parse-screenshot HTTP/1.1" 200 OK
 INFO:vibesy:Screenshot parse request from user 3: screenshot.jpg (image/png)
-INFO:vibesy:Processing image: (696, 308) pixels, mode: RGB
-INFO:vibesy:OCR extracted 17 characters
-INFO:vibesy:OCR sample: Ze ku Ramen = a” ...
-INFO:vibesy:Extracting locations from text (length: 17)
-INFO:vibesy:Found 1 unique locations
-INFO:vibesy:Extracted 1 potential locations from text
-INFO:vibesy:Geocoding 'Ze ku Ramen' (attempt 1/2)
-INFO:vibesy:Successfully geocoded 'Ze ku Ramen' to (35.7082133, 139.8046794)
-INFO:vibesy:✓ Geocoded: Ze ku Ramen
-INFO:vibesy:Successfully geocoded 1 of 1 locations
-INFO:     127.0.0.1:64419 - "POST /parse-screenshot HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64422 - "OPTIONS /locations/from-parsed HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64422 - "POST /locations/from-parsed HTTP/1.1" 200 OK
+INFO:vibesy:Processing image: (578, 359) pixels, mode: RGB
+INFO:vibesy:OCR extracted 1045 characters using multi-pass approach
+INFO:vibesy:OCR sample: Classic, long-running fast-feoc chain knowm fo: its burgers. fries & shakes. Classic, long-running fast-food chain known for its burgers, fries & shakes. Classic, long-running tast-feoc chain known for its burgers, fries & shakes. Classic, long-running fast-fooc chain known fo” its bugers, fries & s...
+INFO:vibesy:Extracting locations from text (length: 1045)
+INFO:vibesy:Found 15 unique locations after deduplication
+INFO:vibesy:Extracted 15 potential locations from text
+INFO:vibesy:Geocoding 'com Fast Food Restaurant Order' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'com Fast Food Restaurant Order'
+INFO:vibesy:Geocoding 'com Fast Food Restaurant Order' (attempt 2/2)
+INFO:vibesy:Geocoding 'meconalds com Menu' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'com Fast Food Restaurant Order'
+INFO:vibesy:Geocoding 'mcdonalds com' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'meconalds com Menu'
+INFO:vibesy:Geocoding 'meconalds com Menu' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'mcdonalds com'
+INFO:vibesy:Geocoding 'mcdonalds com' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'meconalds com Menu'
+INFO:vibesy:Geocoding 'Google reviews' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'mcdonalds com'
+WARNING:vibesy:No geocoding results for 'Google reviews'
+INFO:vibesy:Geocoding 'Google reviews' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'Google reviews'
+INFO:vibesy:Geocoding 'com Website Directions Closes' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'com Website Directions Closes'
+INFO:vibesy:Geocoding 'com Website Directions Closes' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'com Website Directions Closes'
+INFO:vibesy:Geocoding 'Open McDonald' (attempt 1/2)
+INFO:vibesy:Successfully geocoded 'Open McDonald' to (38.2493491, 21.7368632)
+INFO:vibesy:✓ Geocoded: Open McDonald
+INFO:vibesy:Geocoding 'tok tk' (attempt 1/2)
+INFO:vibesy:Successfully geocoded 'tok tk' to (14.2321281, 99.0678579)
+INFO:vibesy:✓ Geocoded: tok tk
+INFO:vibesy:Geocoding 'meconalds com Phone' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'meconalds com Phone'
+INFO:vibesy:Geocoding 'meconalds com Phone' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'meconalds com Phone'
+INFO:vibesy:Geocoding 'Boston' (attempt 1/2)
+INFO:vibesy:Successfully geocoded 'Boston' to (42.3588336, -71.0578303)
+INFO:vibesy:✓ Geocoded: Boston
+INFO:vibesy:Geocoding '146 Tremont St. doston, MA 02131' (attempt 1/2)
+WARNING:vibesy:No geocoding results for '146 Tremont St. doston, MA 02131'
+INFO:vibesy:Geocoding '146 Tremont St. doston, MA 02131' (attempt 2/2)
+WARNING:vibesy:No geocoding results for '146 Tremont St. doston, MA 02131'
+INFO:vibesy:Geocoding 'mi Hours' (attempt 1/2)
+INFO:vibesy:Successfully geocoded 'mi Hours' to (43.0834497, -85.4559263)
+INFO:vibesy:✓ Geocoded: mi Hours
+INFO:vibesy:Geocoding 'knowm fo' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'knowm fo'
+INFO:vibesy:Geocoding 'knowm fo' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'knowm fo'
+INFO:vibesy:Geocoding 'known for its burgers, fries  shakes' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'known for its burgers, fries  shakes'
+INFO:vibesy:Geocoding 'known for its burgers, fries  shakes' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'known for its burgers, fries  shakes'
+INFO:vibesy:Geocoding 'running fast' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'running fast'
+INFO:vibesy:Geocoding 'running fast' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'running fast'
+INFO:vibesy:Geocoding 'food chain known for its burgers' (attempt 1/2)
+WARNING:vibesy:No geocoding results for 'food chain known for its burgers'
+INFO:vibesy:Geocoding 'food chain known for its burgers' (attempt 2/2)
+WARNING:vibesy:No geocoding results for 'food chain known for its burgers'
+INFO:vibesy:Successfully geocoded 4 of 15 locations
+INFO:     127.0.0.1:52416 - "POST /parse-screenshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52423 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52448 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52460 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52452 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52416 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52423 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52423 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52445 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "OPTIONS /locations/from-parsed HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "POST /locations/from-parsed HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52467 - "GET /locations HTTP/1.1" 200 OK

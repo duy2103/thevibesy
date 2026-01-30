@@ -394,31 +394,37 @@ def extract_locations_from_text(text: str) -> List[dict]:
     # Enhanced patterns with broader matching
     patterns = [
         # Location emoji followed by text (highest priority)
-        (r'📍\s*([^\n📍🏠🌴🏖️🎭🍕☕🗺️🏛️]{3,100})', 0.95),
+        (r'📍\s*([^\n📍🏠🌴🏖️🎭🍕☕🗺️🏛️]{3,150})', 0.95),
         
         # Other location emojis
-        (r'[🏠🌴🏖️🎭🍕☕🗺️🏛️🏨🏰🗼🌉]\s*([^\n📍🏠🌴🏖️🎭🍕☕🗺️🏛️]{3,100})', 0.9),
+        (r'[🏠🌴🏖️🎭🍕☕🗺️🏛️🏨🏰🗼🌉🏙️🌆]\s*([^\n📍🏠🌴🏖️🎭🍕☕🗺️🏛️]{3,150})', 0.9),
         
         # Explicit location keywords (multilingual)
-        (r'(?:Location|Address|Place|Venue|Located at|Visit|Địa chỉ|位置|場所|위치|Ubicación|Adresse|Indirizzo|Endereço|地址|Lokasi|สถานที่)[\s:]+([^\n]{5,100})', 0.9),
+        (r'(?:Location|Address|Place|Venue|Located at|Visit|Check out|At|Visiting|Địa chỉ|位置|場所|위치|Ubicación|Adresse|Indirizzo|Endereço|地址|Lokasi|สถานที่)[\s:]+([^\n]{5,150})', 0.92),
         
-        # City, Country format (improved to catch more)
-        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,35},\s*[A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,35})\b', 0.88),
+        # City, Country format (improved to catch more variations)
+        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,45},\s*[A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,45})\b', 0.88),
         
-        # Famous places and cities (expanded list)
-        (r'\b(New York|NYC|San Francisco|Los Angeles|LA|Paris|London|Tokyo|Rome|Barcelona|Amsterdam|Berlin|Prague|Vienna|Budapest|Dublin|Edinburgh|Stockholm|Copenhagen|Madrid|Athens|Istanbul|Dubai|Bangkok|Singapore|Sydney|Melbourne|Vancouver|Toronto|Chicago|Miami|Seattle|Boston|Austin|Portland|Denver|Las Vegas|Honolulu|Santorini|Mykonos|Oia|Fira|Bali|Phuket|Kyoto|Seoul|Hong Kong|Shanghai|Beijing|Hanoi|Ho Chi Minh|Saigon|Manila|Jakarta|Kuala Lumpur|Taipei|Osaka|Fukuoka|Busan|Jeju|Reykjavik|Lisbon|Porto|Monaco|Venice|Florence|Milan|Naples|Zurich|Geneva|Marrakech|Cairo|Cape Town|Nairobi|Rio|Sao Paulo|Buenos Aires|Lima|Cusco|Bogota|Cartagena|Cancun|Tulum|Playa del Carmen)\b', 0.92),
+        # Famous places and cities (expanded list with more global locations)
+        (r'\b(New York|NYC|Manhattan|Brooklyn|San Francisco|Los Angeles|LA|Hollywood|Paris|London|Tokyo|Rome|Barcelona|Amsterdam|Berlin|Prague|Vienna|Budapest|Dublin|Edinburgh|Stockholm|Copenhagen|Madrid|Athens|Istanbul|Dubai|Bangkok|Singapore|Sydney|Melbourne|Brisbane|Perth|Vancouver|Toronto|Montreal|Chicago|Miami|Seattle|Boston|Austin|Portland|Denver|Las Vegas|Honolulu|Santorini|Mykonos|Oia|Fira|Bali|Ubud|Phuket|Krabi|Kyoto|Seoul|Hong Kong|Macau|Shanghai|Beijing|Guangzhou|Shenzhen|Hanoi|Ho Chi Minh|Saigon|Manila|Jakarta|Kuala Lumpur|Penang|Taipei|Osaka|Fukuoka|Busan|Jeju|Reykjavik|Lisbon|Porto|Monaco|Venice|Florence|Milan|Naples|Zurich|Geneva|Marrakech|Cairo|Cape Town|Nairobi|Rio|Sao Paulo|Buenos Aires|Lima|Cusco|Machu Picchu|Bogota|Cartagena|Cancun|Tulum|Playa del Carmen|Mexico City|San Diego|Phoenix|Dallas|Houston|Philadelphia|Washington|Atlanta|New Orleans|Nashville|Memphis|Charleston|Savannah|Key West|Napa|Yosemite|Yellowstone|Grand Canyon|Zion|Tahoe|Aspen|Vail|Whistler|Banff|Queenstown|Auckland|Wellington|Christchurch|Fiji|Tahiti|Maldives|Seychelles|Mauritius|Bora Bora|Santorini|Mykonos|Ibiza|Mallorca|Capri|Amalfi|Positano|Cinque Terre|Dubrovnik|Split|Hvar|Montenegro|Croatia|Slovenia|Lake Como|Lake Garda|Swiss Alps|French Riviera|Cannes|Nice|Monaco|St Tropez|Bordeaux|Lyon|Marseille|Strasbourg|Normandy|Bruges|Brussels|Antwerp|Luxembourg|Edinburgh|Glasgow|Oxford|Cambridge|Bath|Brighton|Cornwall|Lake District|Yorkshire|Cotswolds|Santorini|Crete|Rhodes|Corfu|Zakynthos|Paros|Naxos)\b', 0.93),
         
-        # Places with type suffix (improved)
-        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,45}\s+(?:Beach|Park|Tower|Museum|Temple|Castle|Palace|Fort|Cathedral|Church|Mosque|Shrine|Monastery|Square|Plaza|Market|Bazaar|Bay|Island|Islands|Lake|River|Mountain|Hill|Valley|Garden|Gardens|Bridge|Airport|Station|Hotel|Resort|Restaurant|Cafe|Bistro|Bar|Pub|Mall|Center|Centre|Village|Town|City))\b', 0.87),
+        # Places with type suffix (improved and expanded)
+        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{2,60}\s+(?:Beach|Beaches|Park|Parks|Tower|Towers|Museum|Museums|Temple|Temples|Castle|Castles|Palace|Palaces|Fort|Forts|Cathedral|Cathedrals|Church|Churches|Mosque|Mosques|Shrine|Shrines|Monastery|Monasteries|Square|Squares|Plaza|Plazas|Market|Markets|Bazaar|Bazaars|Bay|Bays|Island|Islands|Lake|Lakes|River|Rivers|Mountain|Mountains|Hill|Hills|Valley|Valleys|Garden|Gardens|Bridge|Bridges|Airport|Airports|Station|Stations|Hotel|Hotels|Resort|Resorts|Restaurant|Restaurants|Cafe|Cafes|Bistro|Bistros|Bar|Bars|Pub|Pubs|Club|Clubs|Mall|Malls|Center|Centre|Centers|Centres|Village|Villages|Town|Towns|City|Cities|Waterfall|Waterfalls|Canyon|Canyons|Pier|Piers|Harbor|Harbour|Marina|Marinas|Port|Ports|Zoo|Zoos|Aquarium|Aquariums|Stadium|Stadiums|Arena|Arenas|Theater|Theatre|Spa|Spas|Winery|Wineries|Vineyard|Vineyards|Brewery|Breweries|Distillery|Distilleries|Bakery|Bakeries|Deli|Delis|Lounge|Lounges|Gallery|Galleries|Library|Libraries|University|Universities|College|Colleges|Hospital|Hospitals|Clinic|Clinics))\b', 0.89),
         
-        # Preposition + Location (improved)
-        (r'(?:at|in|from|to|visiting|near|around|@)\s+([A-ZÀ-Ž][a-zA-ZÀ-ž\s,\-\']{4,70})', 0.78),
+        # Preposition + Location (improved with more prepositions)
+        (r'(?:at|in|from|to|visiting|near|around|by|beside|next to|across from|opposite|behind|@)\s+(?:the\s+)?([A-ZÀ-Ž][a-zA-ZÀ-ž\s,\-\'&]{3,80})', 0.78),
         
-        # Street addresses (numbers + street names)
-        (r'\b(\d+\s+[A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{3,50}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Way|Court|Ct|Place|Pl))\b', 0.82),
+        # Street addresses (numbers + street names) - improved
+        (r'\b(\d+\s+[A-ZÀ-Ž][a-zA-ZÀ-ž\s\-\']{3,60}(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Boulevard|Blvd\.?|Lane|Ln\.?|Drive|Dr\.?|Way|Court|Ct\.?|Place|Pl\.?|Terrace|Ter\.?|Circle|Cir\.?))\b', 0.84),
         
-        # Capitalized phrases (potential locations)
-        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž]+(?:\s+[A-ZÀ-Ž][a-zA-ZÀ-ž]+){1,4})\b', 0.65),
+        # Hashtags with location names (common on social media)
+        (r'#([A-ZÀ-Ž][a-zA-ZÀ-ž]{3,30}(?:[A-Z][a-zA-ZÀ-ž]{2,30})*)', 0.72),
+        
+        # Multiple capitalized words (potential location names)
+        (r'\b([A-ZÀ-Ž][a-zA-ZÀ-ž]+(?:\s+[A-ZÀ-Ž][a-zA-ZÀ-ž]+){1,5})\b', 0.65),
+        
+        # @ mentions that might be places (e.g., @CentralPark)
+        (r'@([A-ZÀ-Ž][a-zA-ZÀ-ž0-9_]{2,40})', 0.68),
     ]
     
     for pattern, confidence in patterns:
@@ -431,8 +437,16 @@ def extract_locations_from_text(text: str) -> List[dict]:
             location_text = re.sub(r'[^\w\s,.\-\'À-ÿĀ-ſƀ-ɏḀ-ỿ一-龯ぁ-ゟァ-ヿ가-힣]', '', location_text)
             location_text = location_text.strip()
             
-            # Filter out common non-location words
-            skip_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'they', 'will', 'what', 'when', 'where', 'your', 'more', 'said', 'each', 'about', 'than'}
+            # Filter out common non-location words and phrases
+            skip_words = {'the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'they', 'will', 'what', 'when', 'where', 'your', 'more', 'said', 'each', 'about', 'than', 'having', 'best', 'time', 'next', 'week', 'visiting'}
+            
+            # Check if text starts or ends with common non-location words
+            words = location_text.lower().split()
+            if words and (words[0] in skip_words or words[-1] in skip_words):
+                # If starts/ends with skip word and confidence is low, skip it
+                if confidence < 0.9:
+                    continue
+            
             if location_text.lower() in skip_words:
                 continue
             
@@ -448,19 +462,46 @@ def extract_locations_from_text(text: str) -> List[dict]:
                     "source": "text_pattern"
                 })
     
-    # Remove duplicates and sort by confidence
+    # Remove duplicates and filter false positives
     unique_locations = []
     seen = set()
-    for loc in sorted(locations, key=lambda x: x["confidence"], reverse=True):
+    
+    # Sort by confidence first
+    sorted_locations = sorted(locations, key=lambda x: x["confidence"], reverse=True)
+    
+    for loc in sorted_locations:
         loc_lower = loc["name"].lower().strip()
-        if loc_lower not in seen and len(loc_lower) > 2:
+        
+        # Skip if already seen or too short
+        if loc_lower in seen or len(loc_lower) < 3:
+            continue
+            
+        # Skip if it's a substring of an already added location (keep longer, more specific one)
+        is_substring = False
+        for existing in unique_locations:
+            existing_lower = existing["name"].lower().strip()
+            if loc_lower in existing_lower or existing_lower in loc_lower:
+                # Keep the one with higher confidence, or longer name if same confidence
+                if loc["confidence"] < existing["confidence"]:
+                    is_substring = True
+                    break
+                elif loc["confidence"] == existing["confidence"] and len(loc_lower) <= len(existing_lower):
+                    is_substring = True
+                    break
+                else:
+                    # Remove the existing one, add this one
+                    unique_locations.remove(existing)
+                    seen.discard(existing_lower)
+                    break
+        
+        if not is_substring:
             seen.add(loc_lower)
             unique_locations.append(loc)
     
-    # Limit to top 20 most confident locations
-    unique_locations = unique_locations[:20]
+    # Limit to top 15 most confident locations to avoid overwhelming the user
+    unique_locations = sorted(unique_locations, key=lambda x: x["confidence"], reverse=True)[:15]
     
-    logger.info(f"Found {len(unique_locations)} unique locations")
+    logger.info(f"Found {len(unique_locations)} unique locations after deduplication")
     return unique_locations
 
 def geocode_location(location_name: str) -> dict:
@@ -582,36 +623,80 @@ async def parse_screenshot(
             image = image.convert('RGB')
         
         # Resize if too large (improves OCR performance)
-        max_dimension = 2000
+        max_dimension = 3000
         if max(image.size) > max_dimension:
             ratio = max_dimension / max(image.size)
             new_size = tuple(int(dim * ratio) for dim in image.size)
             image = image.resize(new_size, Image.Resampling.LANCZOS)
             logger.info(f"Resized image to {new_size}")
         
-        # Enhance image for better OCR
-        from PIL import ImageEnhance, ImageFilter
+        # Enhanced image preprocessing for better OCR
+        from PIL import ImageEnhance, ImageFilter, ImageOps
         
-        # Increase sharpness
-        enhancer = ImageEnhance.Sharpness(image)
-        image = enhancer.enhance(2.0)
+        # Convert to grayscale for better text detection
+        image_gray = ImageOps.grayscale(image)
         
-        # Increase contrast
-        enhancer = ImageEnhance.Contrast(image)
-        image = enhancer.enhance(1.5)
+        # Increase sharpness significantly
+        enhancer = ImageEnhance.Sharpness(image_gray)
+        image_sharp = enhancer.enhance(3.0)
+        
+        # Increase contrast significantly
+        enhancer = ImageEnhance.Contrast(image_sharp)
+        image_contrast = enhancer.enhance(2.5)
+        
+        # Apply slight blur to reduce noise, then sharpen
+        image_processed = image_contrast.filter(ImageFilter.MedianFilter(size=3))
+        
+        # Final sharpening pass
+        enhancer = ImageEnhance.Sharpness(image_processed)
+        image_final = enhancer.enhance(2.0)
         
         logger.info(f"Processing image: {image.size} pixels, mode: {image.mode}")
         
-        # Perform OCR with optimized config
+        # Perform OCR with optimized config - try multiple configurations
+        ocr_text = ""
         try:
-            # Use config for better text detection
-            custom_config = r'--oem 3 --psm 6'  # Use LSTM OCR Engine, assume uniform text block
-            ocr_text = pytesseract.image_to_string(image, lang='eng', config=custom_config)
-            logger.info(f"OCR extracted {len(ocr_text)} characters")
+            # Configuration 1: Standard block detection (best for screenshots)
+            config1 = r'--oem 3 --psm 6 -c preserve_interword_spaces=1'
+            text1 = pytesseract.image_to_string(image_final, lang='eng', config=config1)
+            
+            # Configuration 2: Sparse text detection (good for social media)
+            config2 = r'--oem 3 --psm 11 -c preserve_interword_spaces=1'
+            text2 = pytesseract.image_to_string(image_final, lang='eng', config=config2)
+            
+            # Configuration 3: Single column of text
+            config3 = r'--oem 3 --psm 4 -c preserve_interword_spaces=1'
+            text3 = pytesseract.image_to_string(image_final, lang='eng', config=config3)
+            
+            # Also try with original enhanced image (not grayscale)
+            config4 = r'--oem 3 --psm 6 -c preserve_interword_spaces=1'
+            image_color_enhanced = image.convert('RGB')
+            enhancer = ImageEnhance.Sharpness(image_color_enhanced)
+            image_color_sharp = enhancer.enhance(2.5)
+            enhancer = ImageEnhance.Contrast(image_color_sharp)
+            image_color_final = enhancer.enhance(2.0)
+            text4 = pytesseract.image_to_string(image_color_final, lang='eng', config=config4)
+            
+            # Combine all results and deduplicate
+            all_texts = [text1, text2, text3, text4]
+            # Use the longest text as base
+            ocr_text = max(all_texts, key=len)
+            
+            # Also append unique lines from other attempts
+            all_lines = set()
+            for text in all_texts:
+                all_lines.update(text.strip().split('\n'))
+            
+            # Combine unique lines
+            combined_text = '\n'.join(sorted(all_lines, key=lambda x: len(x), reverse=True))
+            if len(combined_text) > len(ocr_text):
+                ocr_text = combined_text
+            
+            logger.info(f"OCR extracted {len(ocr_text)} characters using multi-pass approach")
             
             # Log sample of extracted text for debugging
             if ocr_text:
-                sample = ocr_text[:200].replace('\n', ' ')
+                sample = ocr_text[:300].replace('\n', ' ')
                 logger.info(f"OCR sample: {sample}...")
             
         except pytesseract.TesseractNotFoundError:
@@ -656,29 +741,48 @@ async def parse_screenshot(
         locations = extract_locations_from_text(ocr_text)
         logger.info(f"Extracted {len(locations)} potential locations from text")
         
-        # Geocode locations (with rate limiting consideration)
+        # Geocode locations (with optimized rate limiting)
         geocoded_locations = []
         import time
+        from concurrent.futures import ThreadPoolExecutor, as_completed
         
-        for i, loc in enumerate(locations):
-            # Add small delay to respect rate limits
-            if i > 0:
-                time.sleep(0.5)
+        # Limit to top 20 most confident locations to avoid rate limiting
+        locations_to_geocode = sorted(locations, key=lambda x: x["confidence"], reverse=True)[:20]
+        
+        def geocode_with_delay(loc_data, index):
+            """Helper function for parallel geocoding with delay"""
+            # Stagger requests to respect rate limits (max 1 req/sec for Nominatim)
+            time.sleep(index * 1.1)  # 1.1 second delay between each request
             
-            geo = geocode_location(loc["name"])
+            geo = geocode_location(loc_data["name"])
             if geo.get("geocoded"):
-                geocoded_locations.append({
-                    "name": loc["name"],
+                return {
+                    "name": loc_data["name"],
                     "latitude": geo["latitude"],
                     "longitude": geo["longitude"],
-                    "address": geo.get("address", loc["name"]),
-                    "confidence": loc["confidence"],
+                    "address": geo.get("address", loc_data["name"]),
+                    "confidence": loc_data["confidence"],
                     "source": "ocr_screenshot",
                     "source_url": None
-                })
-                logger.info(f"✓ Geocoded: {loc['name']}")
-            else:
-                logger.warning(f"✗ Could not geocode: {loc['name']}")
+                }
+            return None
+        
+        # Use ThreadPoolExecutor for parallel geocoding (but with delays)
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {
+                executor.submit(geocode_with_delay, loc, i): loc 
+                for i, loc in enumerate(locations_to_geocode)
+            }
+            
+            for future in as_completed(futures):
+                try:
+                    result = future.result(timeout=15)
+                    if result:
+                        geocoded_locations.append(result)
+                        logger.info(f"✓ Geocoded: {result['name']}")
+                except Exception as e:
+                    loc = futures[future]
+                    logger.warning(f"✗ Failed to geocode {loc['name']}: {e}")
         
         logger.info(f"Successfully geocoded {len(geocoded_locations)} of {len(locations)} locations")
         
